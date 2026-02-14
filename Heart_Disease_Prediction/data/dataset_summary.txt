@@ -1,0 +1,13 @@
+HEART DISEASE DATASET SUMMARY
+======================================================================
+
+Dataset             : Heart Disease Dataset
+Source              : Kaggle (johnsmith88/heart-disease-dataset)
+File                : heart.csv
+Rows                : 1025
+Columns             : 14
+Features            : 13
+Target              : target (binary classification)
+Missing Values      : 0
+Duplicates          : 723
+File Size (KB)      : 37.22
