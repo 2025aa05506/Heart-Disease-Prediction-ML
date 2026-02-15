@@ -16,6 +16,13 @@ from sklearn.metrics import (
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# Page configuration
+st.set_page_config(
+    page_title="Heart Disease Prediction",
+    page_icon="",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 @st.cache_resource
 def train_models_if_needed():
@@ -45,7 +52,7 @@ def train_models_if_needed():
         
         # Check if data exists
         if not os.path.exists('data/heart.csv'):
-            st.error("❌ Error: data/heart.csv not found!")
+            st.error(" Error: data/heart.csv not found!")
             st.info("Please ensure the dataset is in the repository at: data/heart.csv")
             st.stop()
         
@@ -92,20 +99,12 @@ def train_models_if_needed():
         
         status_text.empty()
         progress_bar.empty()
-        st.success("✅ All models trained and saved successfully!")
+        st.success(" All models trained and saved successfully!")
         
     return True
 
 # Train models if needed
 train_models_if_needed()
-
-# Page configuration
-st.set_page_config(
-    page_title="Heart Disease Prediction",
-    page_icon="❤️",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
 
 # Custom CSS
 st.markdown("""
