@@ -16,6 +16,89 @@ from sklearn.metrics import (
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+
+@st.cache_resource
+def train_models_if_needed():
+    """Train models automatically if they don't exist"""
+    model_dir = "model/saved_models"
+    
+    # Check if all models exist
+    required_models = ['scaler.pkl', 'logistic_regression.pkl', 'decision_tree.pkl', 
+                       'knn.pkl', 'naive_bayes.pkl', 'random_forest.pkl', 'xgboost.pkl']
+    
+    models_exist = all(os.path.exists(f"{model_dir}/{m}") for m in required_models)
+    
+    if not models_exist:
+        st.info("🔄 Training models for the first time... This will take 2-3 minutes.")
+        
+        from sklearn.model_selection import train_test_split
+        from sklearn.preprocessing import StandardScaler
+        from sklearn.linear_model import LogisticRegression
+        from sklearn.tree import DecisionTreeClassifier
+        from sklearn.neighbors import KNeighborsClassifier
+        from sklearn.naive_bayes import GaussianNB
+        from sklearn.ensemble import RandomForestClassifier
+        from xgboost import XGBClassifier
+        
+        # Create directory
+        os.makedirs(model_dir, exist_ok=True)
+        
+        # Check if data exists
+        if not os.path.exists('data/heart.csv'):
+            st.error("❌ Error: data/heart.csv not found!")
+            st.info("Please ensure the dataset is in the repository at: data/heart.csv")
+            st.stop()
+        
+        # Load data
+        df = pd.read_csv('data/heart.csv')
+        X = df.drop('target', axis=1)
+        y = df['target']
+        
+        # Split data
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42, stratify=y
+        )
+        
+        # Scale features
+        scaler = StandardScaler()
+        X_train_scaled = scaler.fit_transform(X_train)
+        
+        # Save scaler
+        with open(f"{model_dir}/scaler.pkl", 'wb') as f:
+            pickle.dump(scaler, f)
+        
+        # Define all models
+        models = {
+            'logistic_regression': LogisticRegression(max_iter=1000, random_state=42),
+            'decision_tree': DecisionTreeClassifier(random_state=42, max_depth=10),
+            'knn': KNeighborsClassifier(n_neighbors=5),
+            'naive_bayes': GaussianNB(),
+            'random_forest': RandomForestClassifier(n_estimators=50, random_state=42, max_depth=10),
+            'xgboost': XGBClassifier(random_state=42, eval_metric='logloss', use_label_encoder=False, n_estimators=50)
+        }
+        
+        # Train and save each model with progress bar
+        progress_bar = st.progress(0)
+        status_text = st.empty()
+        
+        for idx, (name, model) in enumerate(models.items()):
+            status_text.text(f"Training {name.replace('_', ' ').title()}...")
+            model.fit(X_train_scaled, y_train)
+            
+            with open(f"{model_dir}/{name}.pkl", 'wb') as f:
+                pickle.dump(model, f)
+            
+            progress_bar.progress((idx + 1) / len(models))
+        
+        status_text.empty()
+        progress_bar.empty()
+        st.success("✅ All models trained and saved successfully!")
+        
+    return True
+
+# Train models if needed
+train_models_if_needed()
+
 # Page configuration
 st.set_page_config(
     page_title="Heart Disease Prediction",
