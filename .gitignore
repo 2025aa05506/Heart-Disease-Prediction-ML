@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Mac
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+.devcontainer/  # ← ADD THIS LINE
+
+# Data (if large)
+# data/*.csv
