@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import joblib
 import os
 from sklearn.metrics import (
     accuracy_score, 
@@ -102,7 +101,8 @@ def load_model(model_name):
     model_path = model_map[model_name]
     
     if os.path.exists(model_path):
-        return joblib.load(model_path)
+        with open(model_path, 'rb') as f:  
+            return pickle.load(f)
     else:
         st.error(f"Model file not found: {model_path}")
         st.stop()
@@ -113,7 +113,8 @@ def load_scaler():
     scaler_path = "model/saved_models/scaler.pkl"
     
     if os.path.exists(scaler_path):
-        return joblib.load(scaler_path)
+        with open(scaler_path, 'rb') as f:  
+            return pickle.load(f)
     else:
         st.error(f"Scaler file not found: {scaler_path}")
         st.stop()
